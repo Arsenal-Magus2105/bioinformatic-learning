@@ -1,0 +1,947 @@
+<title>Nanopore Theory — Thẻ học &amp; Trắc nghiệm</title>
+
+<style>
+  :root{
+    --ground:#10141A; --surface:#171C24; --surface2:#1E242E; --line:#2A323E;
+    --text:#E4E7EC; --dim:#929BAA; --faint:#6B7484;
+    --accent:#E89A2B; --accent-soft:#3A2C14; --ok:#57A583; --ok-soft:#16281F;
+    --bad:#C4604A; --bad-soft:#2A1815;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --r:12px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --ground:#E9EBEE; --surface:#FFFFFF; --surface2:#F3F5F8; --line:#D3D8E0;
+      --text:#131820; --dim:#5C6675; --faint:#818B99;
+      --accent:#A9660A; --accent-soft:#FBF0DD; --ok:#2F7757; --ok-soft:#E4F1EA;
+      --bad:#A4402B; --bad-soft:#F8E6E1;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#E9EBEE; --surface:#FFFFFF; --surface2:#F3F5F8; --line:#D3D8E0;
+    --text:#131820; --dim:#5C6675; --faint:#818B99;
+    --accent:#A9660A; --accent-soft:#FBF0DD; --ok:#2F7757; --ok-soft:#E4F1EA;
+    --bad:#A4402B; --bad-soft:#F8E6E1;
+  }
+  :root[data-theme="dark"]{
+    --ground:#10141A; --surface:#171C24; --surface2:#1E242E; --line:#2A323E;
+    --text:#E4E7EC; --dim:#929BAA; --faint:#6B7484;
+    --accent:#E89A2B; --accent-soft:#3A2C14; --ok:#57A583; --ok-soft:#16281F;
+    --bad:#C4604A; --bad-soft:#2A1815;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--text);
+    font-family:var(--sans); font-size:16px; line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:720px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column}
+
+  /* ---- header : ion-current trace ---- */
+  header{position:sticky; top:0; z-index:20; background:var(--ground); border-bottom:1px solid var(--line)}
+  .trace{display:block; width:100%; height:44px}
+  .hbar{display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:0 16px 10px}
+  .eyebrow{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .eyebrow b{color:var(--accent); font-weight:600}
+  .tbtn{
+    background:none; border:1px solid var(--line); color:var(--dim); cursor:pointer;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:4px 9px; border-radius:6px; flex:none;
+  }
+  .tbtn:hover{color:var(--text); border-color:var(--faint)}
+
+  main{flex:1; padding:18px 16px 96px; display:flex; flex-direction:column; gap:16px}
+
+  h1{font-size:22px; line-height:1.25; letter-spacing:-.02em; margin:0; text-wrap:balance}
+  h2{font-size:15px; letter-spacing:-.01em; margin:0}
+  p{margin:0}
+
+  /* ---- deck list ---- */
+  .lede{color:var(--dim); font-size:14.5px; max-width:60ch}
+  .decks{display:flex; flex-direction:column; gap:10px}
+  .deck{
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+    padding:14px; cursor:pointer; text-align:left; color:inherit; font:inherit; width:100%;
+    transition:border-color .15s, transform .15s;
+  }
+  .deck:hover{border-color:var(--accent)}
+  .deck:active{transform:scale(.99)}
+  .code{
+    font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.06em;
+    color:var(--accent); background:var(--accent-soft); border-radius:6px;
+    padding:6px 8px; min-width:52px; text-align:center;
+  }
+  .deck .meta{font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:3px; letter-spacing:.04em}
+  .ring{width:34px; height:34px; flex:none}
+
+  /* ---- card ---- */
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+    padding:20px; display:flex; flex-direction:column; gap:14px;
+  }
+  .qtext{font-size:19px; line-height:1.4; letter-spacing:-.01em; text-wrap:balance; font-weight:600}
+  .atext{font-size:15.5px; color:var(--text)}
+  .atext em{color:var(--accent); font-style:normal; font-weight:600}
+  .en{
+    font-family:var(--mono); font-size:12.5px; color:var(--dim); line-height:1.5;
+    border-left:2px solid var(--line); padding-left:10px;
+  }
+  .divider{height:1px; background:var(--line); margin:2px 0}
+  .hidden{display:none !important}
+
+  .row{display:flex; gap:8px}
+  .row>*{flex:1}
+  button.act{
+    font:inherit; font-size:14px; font-weight:600; padding:13px 10px; border-radius:10px;
+    border:1px solid var(--line); background:var(--surface2); color:var(--text); cursor:pointer;
+  }
+  button.act:hover{border-color:var(--faint)}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#12161C}
+  :root[data-theme="light"] button.primary, :root:not([data-theme]) button.primary{color:#FFF}
+  @media (prefers-color-scheme: dark){:root:not([data-theme]) button.primary{color:#12161C}}
+  button.good{color:var(--ok); border-color:var(--ok)}
+  button.again{color:var(--bad); border-color:var(--bad)}
+
+  /* ---- quiz ---- */
+  .opt{
+    display:block; width:100%; text-align:left; font:inherit; font-size:15px; cursor:pointer;
+    background:var(--surface2); border:1px solid var(--line); color:var(--text);
+    border-radius:10px; padding:13px 14px 13px 42px; position:relative; line-height:1.4;
+  }
+  .opt:hover:not(:disabled){border-color:var(--faint)}
+  .opt:disabled{cursor:default}
+  .opt .k{
+    position:absolute; left:13px; top:13px; font-family:var(--mono); font-size:12px;
+    color:var(--faint); font-weight:600;
+  }
+  .opt.right{border-color:var(--ok); background:var(--ok-soft)}
+  .opt.right .k{color:var(--ok)}
+  .opt.wrong{border-color:var(--bad); background:var(--bad-soft)}
+  .opt.wrong .k{color:var(--bad)}
+  .opts{display:flex; flex-direction:column; gap:8px}
+  .exp{
+    background:var(--surface2); border:1px solid var(--line); border-left:3px solid var(--accent);
+    border-radius:8px; padding:12px 14px; font-size:14.5px; color:var(--dim);
+  }
+  .exp b{color:var(--text)}
+  .verdict{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; font-weight:600}
+  .verdict.r{color:var(--ok)} .verdict.w{color:var(--bad)}
+
+  /* ---- progress ---- */
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px}
+  .stat .n{font-family:var(--mono); font-size:26px; font-weight:600; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+  .stat .l{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); margin-top:2px}
+  .plist{display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+  .prow{display:grid; grid-template-columns:56px 1fr 64px; align-items:center; gap:12px; background:var(--surface); padding:12px 14px}
+  .prow .c{font-family:var(--mono); font-size:11px; font-weight:600; color:var(--accent)}
+  .prow .nm{font-size:14px}
+  .bar{height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; margin-top:6px}
+  .bar i{display:block; height:100%; background:var(--accent); border-radius:3px; transition:width .4s}
+  .pct{font-family:var(--mono); font-size:12px; color:var(--dim); text-align:right; font-variant-numeric:tabular-nums}
+
+  /* ---- tabs ---- */
+  nav{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:var(--surface); border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .tabs{max-width:720px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr)}
+  .tab{
+    background:none; border:none; cursor:pointer; padding:11px 4px 13px; color:var(--faint);
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    display:flex; flex-direction:column; align-items:center; gap:5px; border-top:2px solid transparent;
+    margin-top:-1px;
+  }
+  .tab svg{width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.6}
+  .tab[aria-selected="true"]{color:var(--accent); border-top-color:var(--accent)}
+
+  .empty{color:var(--dim); font-size:14.5px; text-align:center; padding:40px 20px}
+  a{color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+  @media (min-width:600px){ h1{font-size:26px} .qtext{font-size:21px} }
+</style>
+
+<div class="wrap">
+  <header>
+    <canvas class="trace" id="trace"></canvas>
+    <div class="hbar">
+      <span class="eyebrow" id="crumb">Giáo trình Nanopore · Track lý thuyết</span>
+      <button class="tbtn" id="themeBtn" type="button">Theme</button>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <nav>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="decks" aria-selected="true" type="button">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg>Thẻ học</button>
+      <button class="tab" role="tab" data-view="quizpick" aria-selected="false" type="button">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.3 3.6v1.4"/><circle cx="12.5" cy="17" r=".7" fill="currentColor"/></svg>Trắc nghiệm</button>
+      <button class="tab" role="tab" data-view="progress" aria-selected="false" type="button">
+        <svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Tiến độ</button>
+    </div>
+  </nav>
+</div>
+
+<script>
+"use strict";
+
+/* ============================ NỘI DUNG ============================ */
+
+const DECKS = [
+  {
+    id:"m0", code:"M0", name:"Lộ trình & khái niệm nền",
+    note:"Bản đồ toàn chương trình",
+    cards:[
+      {q:"Chuỗi hiện vật (artefact chain) của một quy trình ONT gồm những gì?",
+       a:"Sample → DNA → Library → Tín hiệu pore → <em>POD5</em> → <em>FASTQ</em> → <em>BAM</em> → {Assembly, VCF} → GFF → Report",
+       en:"Every module in the curriculum owns exactly one arrow in this chain."},
+      {q:"Năm tầng của tin sinh học ứng dụng, từ dưới lên?",
+       a:"L0 Vật lý (dòng qua pore) → L1 Compute (Linux, pipeline) → L2 Dữ liệu (FASTQ, BAM, VCF) → L3 Phân tích (assembly, alignment) → L4 Diễn giải (typing, AMR) → <em>L5 Quyết định</em>",
+       en:"Most self-taught people stall by attacking Layer 3 without Layer 1."},
+      {q:"Ba mission profile của ONT trong vi sinh — và câu hỏi mỗi cái trả lời?",
+       a:"<em>Isolate WGS</em>: “Nó là gì, mang gen kháng nào?” · <em>Amplicon</em>: “Có những taxa nào?” · <em>Shotgun metagenomics</em>: “Trong mẫu chưa biết này có gì?”",
+       en:"Isolate WGS 24–48 h · Amplicon 6–12 h · Shotgun 12–36 h."},
+      {q:"Vì sao ONT khác Illumina ở chỗ “không tách rời được máy khỏi phân tích”?",
+       a:"Lựa chọn basecalling model (fast/hac/sup), sức khoẻ flow cell và phân bố chiều dài thư viện đều <em>làm đổi kết quả</em>. Illumina thì bạn nhận FASTQ và quên máy đi.",
+       en:"This is precisely why an ISO 17025 lab needs an in-house bioinformatician."},
+      {q:"Nguyên tắc bất di bất dịch với dữ liệu thô?",
+       a:"<em>Không bao giờ sửa</em>. <code>chmod -w data/raw</code> ngay ngày đầu, kèm checksum.",
+       en:"Raw data is read-only. This is Buffalo Ch.2 and ISO 17025 §7.11 saying the same thing."},
+      {q:"“Tôi đã chạy Flye” — vì sao câu này KHÔNG phải là một phương pháp?",
+       a:"Phương pháp phải là: <em>flye v2.9.5, --nano-hq, --genome-size 3m, container sha256:…, chạy ngày 2026-07-27</em>. Thiếu version + tham số + môi trường thì không tái lập được.",
+       en:"Maps 1:1 onto ISO 17025 §7.11 and §7.2.1.5."},
+      {q:"Khoảng trống thẩm định (validation gap) trong NGS là gì?",
+       a:"Phương pháp ướt thẩm định bằng vật liệu chuẩn; còn <em>pipeline tin sinh thẩm định bằng bộ dữ liệu chuẩn</em> — truth set in-silico, chủng NCTC/ATCC đã đặc trưng hoá, mock community ZymoBIOMICS.",
+       en:"Most labs fail their first NGS assessment here, not on the sequencing."},
+      {q:"ALCOA+ — chữ “C” đầu tiên (Contemporaneous) dịch sang tin sinh học là gì?",
+       a:"Log phải ghi <em>lúc đang chạy</em>, không viết lại sau → lưu <code>stdout</code>/<code>stderr</code> của mỗi lần chạy.",
+       en:"Attributable · Legible · Contemporaneous · Original · Accurate + Complete, Consistent, Enduring, Available."},
+      {q:"ALCOA+ “Legible” trong tin sinh học nghĩa là gì?",
+       a:"Lệnh phải <em>đọc được và lặp lại được</em> → dùng script, <em>không dùng GUI click chuột</em>.",
+       en:"A GUI click leaves no legible record. A script is the record."},
+      {q:"ALCOA+ “Consistent” đòi hỏi kỹ thuật gì?",
+       a:"Cùng input phải cho cùng output → <em>container + version pinning</em>.",
+       en:"Conda envs drift; containers do not."}
+    ],
+    quiz:[
+      {q:"Trong chuỗi hiện vật ONT, cái gì đứng NGAY TRƯỚC FASTQ?",
+       o:["BAM","POD5","VCF","GFF"], a:1,
+       e:"POD5 chứa tín hiệu thô. Dorado basecalling biến POD5 → FASTQ. FAST5 là định dạng cũ đã bị thay thế."},
+      {q:"Câu nào mô tả đúng một “phương pháp” đạt chuẩn ISO 17025?",
+       o:["Chúng tôi lắp ráp bằng Flye","Flye v2.9.5, --nano-hq, --genome-size 3m, container sha256:abc…","Assembly được thực hiện bằng phần mềm long-read","Dùng pipeline chuẩn của phòng thí nghiệm"], a:1,
+       e:"Version + tham số + môi trường thực thi. Thiếu bất kỳ thành phần nào thì không tái lập được, và không bảo vệ được trước đánh giá viên."},
+      {q:"Pipeline tin sinh học được thẩm định bằng gì?",
+       o:["Vật liệu chuẩn được chứng nhận","Bộ dữ liệu chuẩn (truth set, chủng đã đặc trưng hoá, mock community)","Chứng chỉ của nhà sản xuất phần mềm","So sánh liên phòng bắt buộc"], a:1,
+       e:"Đây là điểm hầu hết phòng thí nghiệm trượt lần đánh giá NGS đầu tiên — họ thẩm định phần ướt rất kỹ nhưng bỏ trống phần tin sinh."},
+      {q:"Vì sao ISO 17025 buộc phòng thí nghiệm phải có người làm tin sinh học nội bộ khi dùng ONT?",
+       o:["Vì dữ liệu ONT quá lớn để gửi đi","Vì lựa chọn basecalling model và sức khoẻ flow cell làm đổi kết quả","Vì ONT không có phần mềm phân tích","Vì quy định cấm thuê ngoài"], a:1,
+       e:"Trên ONT, phân tích không tách rời khỏi máy. fast/hac/sup cho ra kết quả khác nhau từ cùng một tín hiệu thô."}
+    ]
+  },
+
+  {
+    id:"t1", code:"T1", name:"Sinh học phân tử & tiến hoá",
+    note:"Ohlebusch ch.1 + Selzer ch.2",
+    cards:[
+      {q:"Vì sao phải luôn nghĩ theo chiều 5′→3′ và reverse complement?",
+       a:"Mọi read đều có thể đến từ <em>một trong hai mạch</em>. Aligner và assembler phải xét cả chuỗi và <em>bổ sung ngược</em> của nó, nếu không sẽ mất một nửa dữ liệu.",
+       en:"Reverse complement of 5'-ATGC-3' is 5'-GCAT-3'."},
+      {q:"Ortholog và paralog khác nhau thế nào — và vì sao quan trọng?",
+       a:"<em>Ortholog</em>: cùng gen ở hai loài, tách ra do <em>hình thành loài</em>. <em>Paralog</em>: hai bản sao trong cùng bộ gen, tách ra do <em>nhân đôi gen</em>. Nhầm paralog thành ortholog → <em>cây phát sinh loài sai</em>.",
+       en:"Orthology = speciation. Paralogy = duplication. cgMLST schemes exclude paralogous loci for this reason."},
+      {q:"Transition và transversion — tỉ lệ ts/tv thực tế bằng bao nhiêu?",
+       a:"<em>Transition</em>: purine↔purine (A↔G) hoặc pyrimidine↔pyrimidine (C↔T). <em>Transversion</em>: purine↔pyrimidine. Thực tế ts/tv ≈ <em>2</em> dù ngẫu nhiên thì phải là 0,5.",
+       en:"A ts/tv ratio far from ~2 in your VCF is a red flag for false positives."},
+      {q:"dN/dS đo cái gì, và ba ngưỡng diễn giải?",
+       a:"Tỉ lệ thay thế <em>không đồng nghĩa</em> trên <em>đồng nghĩa</em>. <em>&lt;1</em> chọn lọc thanh lọc (gen bảo thủ) · <em>=1</em> trung tính · <em>&gt;1</em> chọn lọc dương (đang tiến hoá thích nghi).",
+       en:"dN/dS > 1 in an AMR gene suggests active selection under antibiotic pressure."},
+      {q:"Vì sao chuyển gen ngang (HGT) làm hỏng giả định của cây phát sinh loài?",
+       a:"Cây giả định gen di truyền <em>dọc</em> từ tổ tiên. HGT chuyển gen <em>ngang</em> giữa các dòng không liên quan → <em>cây gen ≠ cây loài</em>. Đây là lý do phải che (mask) vùng tái tổ hợp trước khi dựng cây.",
+       en:"Gubbins exists precisely to remove recombinant regions before tree building."},
+      {q:"Năm loại yếu tố di truyền di động (MGE) cần thuộc?",
+       a:"<em>Plasmid</em> · <em>Transposon</em> · <em>Integron</em> · <em>IS element</em> · <em>Prophage</em>",
+       en:"MGEs are the vehicles of AMR spread — and the main reason long reads matter."},
+      {q:"Operon rRNA của vi khuẩn có cấu trúc gì, và vì sao nó là “kẻ thù” của assembly?",
+       a:"<em>16S–23S–5S</em>, dài ~5 kb, thường có <em>nhiều bản sao gần như giống hệt</em> (E. coli có 7). Short-read không bắc cầu qua được → <em>contig bị đứt ngay tại đó</em>.",
+       en:"This is the single clearest argument for long reads in bacteriology."},
+      {q:"Vì sao 16S dùng được cho phân loại?",
+       a:"Có <em>vùng bảo thủ</em> (để bắt mồi phổ quát) xen kẽ <em>9 vùng biến đổi V1–V9</em> (để phân biệt taxa).",
+       en:"Short reads cover only 1–2 variable regions; ONT covers the full ~1,500 bp gene — hence better resolution."},
+      {q:"Bộ gen vi khuẩn khác eukaryote ở ba điểm nào quan trọng cho tin sinh?",
+       a:"<em>Nhiễm sắc thể vòng</em> (+ plasmid) · <em>không có intron</em> (gần như) → gene calling dễ hơn nhiều · <em>operon</em>, gen cùng chức năng nằm cạnh nhau.",
+       en:"This is why bacterial annotation (Bakta/Prodigal) is fast and reliable while eukaryotic annotation is not."},
+      {q:"Mã di truyền thoái hoá (degenerate) nghĩa là gì và hệ quả?",
+       a:"64 codon mã hoá 20 acid amin → nhiều codon cho cùng một acid amin, chủ yếu khác ở <em>vị trí thứ 3</em>. Hệ quả: đột biến vị trí 3 thường <em>đồng nghĩa</em>.",
+       en:"This underpins the whole dN/dS framework."},
+      {q:"GC content dùng làm gì trong thực hành?",
+       a:"Dấu hiệu <em>đặc trưng cho loài</em>; đoạn có GC lệch bất thường trong assembly gợi ý <em>DNA ngoại lai</em> — plasmid, prophage, hoặc <em>nhiễm chéo</em>.",
+       en:"A GC outlier contig is a contamination alarm before any classifier runs."},
+      {q:"Đồng hồ phân tử (molecular clock) giả định gì, và khi nào nó sai?",
+       a:"Giả định đột biến tích luỹ với <em>tốc độ xấp xỉ đều theo thời gian</em>. Sai khi có <em>tái tổ hợp</em>, khi áp lực chọn lọc thay đổi, hoặc khi so sánh các dòng có tốc độ khác nhau.",
+       en:"Outbreak dating rests on this assumption — state it explicitly in reports."},
+      {q:"Vì sao đột biến điểm ở vị trí codon 1 và 2 nguy hiểm hơn vị trí 3?",
+       a:"Vị trí 1 và 2 gần như luôn <em>đổi acid amin</em> (không đồng nghĩa) → đổi chức năng protein. Vị trí 3 phần lớn <em>đồng nghĩa</em>.",
+       en:"Relevant when interpreting point mutations conferring resistance (e.g. gyrA, rpoB)."},
+      {q:"Đột biến điểm kháng thuốc kinh điển nằm ở gen nào?",
+       a:"<em>gyrA/parC</em> → fluoroquinolone · <em>rpoB</em> → rifampicin · <em>23S rRNA</em> → macrolide",
+       en:"Point mutations need PointFinder-style tools; gene-presence tools alone will miss them."}
+    ],
+    quiz:[
+      {q:"Hai gen trong cùng một bộ gen vi khuẩn, sinh ra do nhân đôi gen, gọi là gì?",
+       o:["Ortholog","Paralog","Xenolog","Homoplasy"], a:1,
+       e:"Paralog = nhân đôi trong cùng bộ gen. Nếu nhầm paralog thành ortholog khi dựng cây, bạn sẽ được một cây sai. Đây là lý do schema cgMLST loại bỏ locus paralog."},
+      {q:"Tỉ lệ ts/tv trong VCF của bạn bằng 0,6. Điều này gợi ý gì?",
+       o:["Bình thường, đúng như kỳ vọng","Nhiều biến thể giả (false positive)","Mẫu bị nhiễm loài khác","Độ sâu quá cao"], a:1,
+       e:"Sinh học thực tế cho ts/tv ≈ 2. Giá trị tiến về 0,5 (kỳ vọng ngẫu nhiên) nghĩa là bộ biến thể của bạn đang bị lẫn nhiều lỗi ngẫu nhiên."},
+      {q:"Vì sao operon rRNA làm đứt contig khi lắp ráp bằng short-read?",
+       o:["Vì nó có GC content cao","Vì nó dài ~5 kb và có nhiều bản sao gần như giống hệt","Vì nó nằm trên plasmid","Vì nó không được giải trình tự"], a:1,
+       e:"Read ngắn không bắc cầu qua được một repeat dài hơn chính nó. Assembler buộc phải dừng lại. Long read dài hơn repeat thì đi thẳng qua — đây là luận điểm rõ nhất cho long-read trong vi khuẩn học."},
+      {q:"dN/dS = 2,4 ở một gen kháng kháng sinh có nghĩa gì?",
+       o:["Gen đang bị thanh lọc, rất bảo thủ","Gen tiến hoá trung tính","Chọn lọc dương — gen đang thích nghi dưới áp lực kháng sinh","Dữ liệu bị lỗi"], a:2,
+       e:"dN/dS > 1 nghĩa là thay thế đổi acid amin được giữ lại nhiều hơn kỳ vọng — dấu hiệu chọn lọc dương đang diễn ra."},
+      {q:"Vì sao phải che (mask) vùng tái tổ hợp trước khi dựng cây phát sinh loài?",
+       o:["Để giảm dung lượng file","Vì HGT làm gen di truyền ngang, phá vỡ giả định di truyền dọc của cây","Vì vùng đó luôn có chất lượng base thấp","Vì công cụ không đọc được vùng lặp"], a:1,
+       e:"Cây giả định mọi khác biệt tích luỹ theo dòng dõi dọc. Một đoạn nhận được qua HGT mang lịch sử hoàn toàn khác và sẽ kéo lệch cây. Gubbins sinh ra để làm đúng việc này."},
+      {q:"Một contig trong assembly có GC lệch hẳn so với phần còn lại. Nghi ngờ đầu tiên là gì?",
+       o:["Lỗi basecalling","DNA ngoại lai: plasmid, prophage hoặc nhiễm chéo","Độ sâu không đủ","Lỗi của Medaka"], a:1,
+       e:"GC content đặc trưng cho loài. Một contig lệch GC là cảnh báo nhiễm hoặc yếu tố di truyền ngoại lai — kiểm tra trước khi chạy bất kỳ classifier nào."}
+    ]
+  },
+
+  {
+    id:"m1", code:"M1", name:"Sinh học phân tử cho NGS",
+    note:"Từ mẫu tới thư viện — góc nhìn dữ liệu",
+    cards:[
+      {q:"HMW DNA là gì và vì sao long-read bắt buộc cần nó?",
+       a:"DNA phân tử lượng cao, <em>&gt;50 kb</em>. Read không bao giờ dài hơn <em>phân tử DNA</em> mà bạn nạp vào. Tách DNA vụn → read ngắn, dù máy có khả năng đọc dài.",
+       en:"Your read N50 is capped by your fragment N50. The instrument cannot fix bad extraction."},
+      {q:"Bốn nguyên nhân làm đứt gãy DNA trong phòng thí nghiệm?",
+       a:"<em>Pipetting mạnh</em> · <em>Vortex</em> · <em>Đông–rã lặp lại</em> · <em>Cột silica</em> (bám và cắt DNA dài)",
+       en:"For HMW work: wide-bore tips, invert don't vortex, bead- or precipitation-based extraction."},
+      {q:"Qubit và NanoDrop khác nhau ở nguyên lý gì — và cái nào dùng để tính lượng nạp?",
+       a:"<em>Qubit</em>: huỳnh quang, thuốc nhuộm <em>chỉ bắt dsDNA</em> → định lượng đúng. <em>NanoDrop</em>: hấp thụ 260 nm, <em>đếm cả RNA, nucleotide tự do, protein</em> → luôn cao hơn thực tế. <em>Luôn dùng Qubit để tính lượng nạp.</em>",
+       en:"NanoDrop measures purity ratios; Qubit measures mass. Use each for its own job."},
+      {q:"A260/280 và A260/230 — giá trị đạt và ý nghĩa khi lệch?",
+       a:"<em>A260/280 ≈ 1,8</em>; thấp → nhiễm <em>protein/phenol</em>. <em>A260/230 ≈ 2,0–2,2</em>; thấp → nhiễm <em>muối, guanidine, carbohydrate, phenol</em>.",
+       en:"A260/230 is the one that predicts pore poisoning. It is routinely ignored — don't."},
+      {q:"Vì sao phải nạp theo MOL (fmol) chứ không theo KHỐI LƯỢNG (ng)?",
+       a:"Pore đọc <em>từng phân tử</em>. Cùng 100 ng, DNA 50 kb có <em>ít phân tử hơn nhiều</em> so với DNA 5 kb → nạp theo ng sẽ <em>thiếu phân tử</em> và lãng phí flow cell.",
+       en:"fmol = (ng × 1e6) / (660 × bp). Long libraries need more mass for the same molarity."},
+      {q:"Vì sao vi khuẩn Gram dương khó tách DNA hơn Gram âm?",
+       a:"Lớp <em>peptidoglycan dày</em> → cần <em>lysozyme</em> (± mutanolysin, lysostaphin) trước khi ly giải. Nếu bỏ bước này, hiệu suất thấp và <em>thiên lệch thành phần</em> trong metagenomics.",
+       en:"In metagenomics, incomplete Gram-positive lysis silently biases your abundance table."},
+      {q:"Chất nhiễm nào “đầu độc” pore — và mẫu nào hay gặp?",
+       a:"<em>Polysaccharide</em> (thực vật, thực phẩm) · <em>Acid humic</em> (đất, nước thải) · <em>Phenol</em> · <em>Muối dư</em> · <em>Protein</em>. Biểu hiện: số pore hoạt động <em>tụt nhanh</em> trong vài giờ đầu.",
+       en:"A run that starts at 1,400 pores and drops to 300 by hour 4 is a chemistry problem, not a flow cell problem."},
+      {q:"BSA trong thư viện có tác dụng gì — con số cụ thể?",
+       a:"Bổ sung BSA cải thiện độ chính xác từng read: <em>98,76% → 99,32%</em> (Hall et al. 2024), và giảm indel ở 7/9 bộ gen.",
+       en:"Cheap, easy, measurable. Add it to your SOP."},
+      {q:"Read N50 nghĩa là gì?",
+       a:"Chiều dài L sao cho <em>một nửa tổng số base</em> nằm trong các read <em>dài ≥ L</em>. Không phải trung bình, không phải trung vị.",
+       en:"Same definition applies to contig N50 in assembly."},
+      {q:"Ba loại kit thư viện ONT chính và đánh đổi?",
+       a:"<em>SQK-LSK114</em> ligation: yield và read dài nhất, lâu nhất, DNA phải sạch · <em>SQK-RBK114</em> rapid: ~10 phút, transposase cắt DNA → read ngắn hơn · <em>SQK-NBD114</em> native barcoding: ghép nhiều mẫu, chất lượng gần ligation",
+       en:"Rapid trades read length for hands-on time. For closing genomes, prefer ligation or native barcoding."},
+      {q:"Vì sao rapid kit cho read ngắn hơn ligation kit?",
+       a:"Rapid dùng <em>transposase</em> vừa cắt DNA vừa gắn adapter — bước cắt là <em>bản chất</em> của phương pháp, không phải lỗi thao tác.",
+       en:"You cannot get 100 kb reads from a rapid kit no matter how good your extraction is."},
+      {q:"Nếu định chạy metagenomics định lượng, bước tách DNA phải đảm bảo gì?",
+       a:"<em>Ly giải đồng đều mọi nhóm vi sinh</em> (Gram +, Gram −, nấm men, bào tử). Ly giải lệch → <em>bảng độ phong phú sai</em> mà không có cảnh báo nào.",
+       en:"Validate lysis with a mock community of known composition (e.g. ZymoBIOMICS) — this is your reference material."}
+    ],
+    quiz:[
+      {q:"Bạn cần read dài để đóng một bộ gen vi khuẩn. Yếu tố nào giới hạn chiều dài read?",
+       o:["Loại flow cell","Chiều dài phân tử DNA bạn nạp vào","Basecalling model","Thời gian chạy"], a:1,
+       e:"Read không bao giờ dài hơn phân tử DNA. Máy không sửa được lỗi tách chiết. Đây là lý do M18 (quy trình lab) quan trọng ngang phần tin sinh."},
+      {q:"Dùng chỉ số nào để tính lượng DNA nạp vào thư viện?",
+       o:["NanoDrop A260","Qubit","A260/230","Nồng độ trên gel"], a:1,
+       e:"NanoDrop đếm cả RNA, nucleotide tự do và protein nên luôn cao hơn thực tế. Qubit dùng thuốc nhuộm chỉ bắt dsDNA. Nạp theo NanoDrop = nạp thiếu."},
+      {q:"Mẫu đất, A260/230 = 1,1. Rủi ro lớn nhất khi chạy là gì?",
+       o:["Read quá dài","Acid humic đầu độc pore, số pore tụt nhanh","Barcode bị lẫn","Không đủ độ sâu"], a:1,
+       e:"A260/230 thấp báo hiệu chất nhiễm hữu cơ/muối. Với mẫu môi trường, thủ phạm điển hình là acid humic. Biểu hiện: pore hoạt động giảm mạnh trong vài giờ đầu."},
+      {q:"Cùng nạp 200 ng DNA. Thư viện A có fragment 8 kb, thư viện B có 60 kb. Điều gì đúng?",
+       o:["B có nhiều phân tử hơn","A có nhiều phân tử hơn, B dễ bị thiếu mol","Số phân tử bằng nhau","Không liên quan tới hiệu suất"], a:1,
+       e:"Cùng khối lượng, phân tử càng dài thì số phân tử càng ít. Pore đọc từng phân tử, nên phải quy đổi sang fmol chứ không nạp theo ng."},
+      {q:"Bổ sung BSA vào thư viện cải thiện độ chính xác từng read từ bao nhiêu lên bao nhiêu?",
+       o:["96,8% → 98,8%","98,76% → 99,32%","99,0% → 99,9%","95,0% → 97,0%"], a:1,
+       e:"Hall et al. 2024. Cải thiện nhỏ nhưng có ý nghĩa thống kê và giảm indel ở 7/9 bộ gen. Rẻ, dễ, đo được — nên đưa vào SOP."},
+      {q:"Vì sao rapid kit (SQK-RBK114) không thể cho read dài như ligation kit?",
+       o:["Vì thời gian chạy ngắn hơn","Vì transposase cắt DNA — đó là bản chất phương pháp","Vì dùng ít DNA hơn","Vì không tương thích R10.4.1"], a:1,
+       e:"Transposase vừa cắt vừa gắn adapter. Bước cắt là cơ chế, không phải lỗi thao tác. Tách chiết tốt đến đâu cũng không vượt qua được."}
+    ]
+  },
+
+  {
+    id:"m2", code:"M2", name:"Linux — phần lý thuyết",
+    note:"Khái niệm học được không cần máy",
+    cards:[
+      {q:"Kernel, shell, userland — mỗi thứ làm gì?",
+       a:"<em>Kernel</em>: nói chuyện với phần cứng, quản lý bộ nhớ và tiến trình. <em>Shell</em>: thông dịch lệnh của bạn thành lời gọi hệ thống. <em>Userland</em>: các chương trình bạn chạy (ls, grep, minimap2).",
+       en:"When people say \"Linux\" they usually mean kernel + userland + shell together."},
+      {q:"“Mọi thứ đều là file” — ý nghĩa thực tế?",
+       a:"Thiết bị, tiến trình, kết nối mạng đều hiện ra dưới dạng file. Vì thế <em>cùng một bộ công cụ</em> (cat, grep, redirect) làm việc được với mọi thứ.",
+       en:"This is why a pipe from a device works exactly like a pipe from a text file."},
+      {q:"Ba luồng chuẩn và số hiệu của chúng?",
+       a:"<em>0 = stdin</em> (vào) · <em>1 = stdout</em> (ra, dữ liệu) · <em>2 = stderr</em> (ra, thông báo lỗi)",
+       en:"Keeping stderr separate is why you can pipe data while still seeing errors on screen."},
+      {q:"Vì sao stderr phải tách khỏi stdout?",
+       a:"Để <em>dữ liệu chảy qua pipe</em> mà <em>lỗi vẫn hiện ra màn hình</em>. Nếu trộn chung, thông báo lỗi sẽ lọt vào file FASTQ của bạn.",
+       en:"Log stderr to a file per run — that log is an ISO 17025 record."},
+      {q:"Triết lý Unix trong một câu, và vì sao nó là nền của mọi pipeline tin sinh?",
+       a:"<em>Công cụ nhỏ, làm một việc thật tốt, nối với nhau bằng luồng văn bản.</em> Toàn bộ bioinformatics dựng trên đó: seqkit | minimap2 | samtools.",
+       en:"Buffalo Ch.3 & Ch.7. This idea is older than genomics and outlived every GUI."},
+      {q:"Exit code trong Bash: quy ước là gì?",
+       a:"<em>0 = thành công</em>, khác 0 = lỗi. Ngược trực giác so với true/false trong lập trình.",
+       en:"Pipelines rely on this: `cmd && next` runs next only if cmd exited 0."},
+      {q:"Đường dẫn tuyệt đối và tương đối khác nhau ra sao — cái nào dùng trong script?",
+       a:"<em>Tuyệt đối</em> bắt đầu bằng <code>/</code>, luôn trỏ đúng chỗ. <em>Tương đối</em> phụ thuộc thư mục hiện hành. Trong script chính thức: <em>dùng tuyệt đối</em>, hoặc đặt biến gốc rõ ràng.",
+       en:"A relative path in a validated pipeline is a reproducibility bug waiting to happen."},
+      {q:"Quyền rwx dạng số: 644 và 755 nghĩa là gì?",
+       a:"r=4, w=2, x=1, theo thứ tự <em>user–group–other</em>. <em>644</em> = chủ đọc/ghi, còn lại chỉ đọc (file dữ liệu). <em>755</em> = chủ toàn quyền, còn lại đọc + chạy (script, thư mục).",
+       en:"`chmod -w` on data/raw is your first ISO 17025 control."},
+      {q:"Vì sao trong WSL2 không nên để dữ liệu ở /mnt/c?",
+       a:"Truy cập chéo hệ thống file Windows ↔ Linux <em>chậm 5–20 lần</em>. Dữ liệu làm việc phải nằm trong <em>hệ thống file Linux</em> (~/).",
+       en:"This single mistake can make an assembly take a whole day instead of an hour."},
+      {q:"PATH là gì, và vì sao nó liên quan tới khả năng tái lập?",
+       a:"Danh sách thư mục shell tìm chương trình theo <em>thứ tự</em>. Cùng một lệnh có thể gọi <em>hai phiên bản khác nhau</em> tuỳ PATH → kết quả khác nhau mà không có cảnh báo.",
+       en:"`which minimap2` before every validated run. Better: pin the version in a container."},
+      {q:"Vì sao mỗi dự án nên có một môi trường conda riêng?",
+       a:"Cách ly phiên bản phần mềm. Export ra <code>environment.yml</code> → <em>tái lập được</em>. Cài chung một môi trường khổng lồ → xung đột phụ thuộc và không truy vết được.",
+       en:"Environment per project. Export the YAML into the project's git repo."},
+      {q:"Vì sao KHÔNG BAO GIỜ dùng sudo pip install cho công cụ tin sinh?",
+       a:"Ghi đè vào Python hệ thống, phá vỡ cách ly, <em>không truy vết được phiên bản</em>, và có thể làm hỏng hệ điều hành.",
+       en:"Always micromamba/conda envs, never sudo pip."},
+      {q:"Job chạy 20 tiếng qua SSH — vấn đề gì và giải pháp?",
+       a:"Mất kết nối là tiến trình bị giết. Giải pháp: <em>tmux</em> hoặc <em>screen</em> — phiên tồn tại độc lập với kết nối.",
+       en:"Or nohup + &, but tmux lets you reattach and watch."},
+      {q:"Symbolic link và hard link khác nhau thế nào?",
+       a:"<em>Symlink</em>: con trỏ tới đường dẫn; xoá đích thì link hỏng. <em>Hard link</em>: tên thứ hai của <em>cùng dữ liệu</em>; xoá một tên, dữ liệu vẫn còn.",
+       en:"Symlink references to raw data keep raw immutable while letting projects use it."},
+      {q:"Vì sao dùng script thay vì gõ lệnh trực tiếp, dưới góc nhìn ISO 17025?",
+       a:"Script là <em>bằng chứng đọc được, lặp lại được, quy trách nhiệm được</em> — thoả “Legible” và “Attributable” của ALCOA+. Gõ tay không để lại hồ sơ.",
+       en:"Anything you do more than twice becomes a script."},
+      {q:"Vì sao checksum (md5/sha256) là bắt buộc với dữ liệu thô?",
+       a:"Chứng minh file <em>không đổi</em> giữa hai thời điểm — phát hiện hỏng dữ liệu khi sao chép và chứng minh tính toàn vẹn khi thanh tra hỏi.",
+       en:"ALCOA+ \"Original\" and \"Enduring\", implemented in one command."}
+    ],
+    quiz:[
+      {q:"Trong Bash, lệnh chạy thành công trả về exit code nào?",
+       o:["1","0","true","-1"], a:1,
+       e:"0 = thành công. Ngược với trực giác true/false. Nhờ quy ước này mà `cmd && next_cmd` chỉ chạy next_cmd khi cmd thành công."},
+      {q:"Vì sao stderr được tách khỏi stdout?",
+       o:["Để chạy nhanh hơn","Để dữ liệu chảy qua pipe mà lỗi vẫn hiện ra","Vì quy định POSIX bắt buộc","Để tiết kiệm bộ nhớ"], a:1,
+       e:"Nếu trộn chung, thông báo lỗi sẽ lọt thẳng vào file FASTQ của bạn. Tách ra còn cho phép lưu stderr thành log — chính là hồ sơ ISO 17025."},
+      {q:"chmod 644 trên một file dữ liệu nghĩa là gì?",
+       o:["Ai cũng ghi được","Chủ đọc+ghi, nhóm và người khác chỉ đọc","Chủ toàn quyền, người khác không truy cập","File thực thi được"], a:1,
+       e:"r=4, w=2, x=1 theo thứ tự user-group-other. 6=rw, 4=r, 4=r. Với data/raw bạn còn đi xa hơn: chmod -w để chính bạn cũng không sửa được."},
+      {q:"Bạn để dữ liệu ONT ở /mnt/c trong WSL2. Hậu quả?",
+       o:["Không sao cả","Chậm 5–20 lần vì truy cập chéo hệ thống file","Dữ liệu bị hỏng","Không chạy được conda"], a:1,
+       e:"Đây là lỗi phổ biến nhất của người mới dùng WSL2 và có thể biến một assembly 1 tiếng thành cả ngày. Dữ liệu làm việc phải nằm trong ~/."},
+      {q:"Cùng một lệnh `minimap2` trên hai máy cho kết quả khác nhau. Nghi ngờ đầu tiên?",
+       o:["Lỗi phần cứng","PATH trỏ tới hai phiên bản khác nhau","File input bị hỏng","Thiếu RAM"], a:1,
+       e:"PATH quyết định phiên bản nào được gọi, và nó im lặng. Đây chính là lý do ALCOA+ 'Consistent' đòi hỏi container + version pinning."},
+      {q:"Bạn chạy một job assembly 20 tiếng qua SSH. Cách làm đúng?",
+       o:["Giữ laptop mở suốt","Chạy trong tmux hoặc screen","Chạy lại nếu mất kết nối","Dùng nice để ưu tiên"], a:1,
+       e:"Mất kết nối SSH sẽ giết tiến trình con. tmux/screen tạo phiên tồn tại độc lập, cho phép ngắt kết nối rồi quay lại xem tiếp."},
+      {q:"Triết lý Unix nào là nền tảng của mọi pipeline tin sinh học?",
+       o:["Một chương trình lớn làm mọi việc","Công cụ nhỏ, làm một việc tốt, nối bằng luồng văn bản","Giao diện đồ hoạ cho mọi thao tác","Dữ liệu luôn ở dạng nhị phân"], a:1,
+       e:"seqkit | minimap2 | samtools chính là triết lý đó. Ý tưởng này có trước genomics và đã sống lâu hơn mọi GUI."}
+    ]
+  },
+
+  {
+    id:"m17a", code:"M17A", name:"Vật lý & hoá học Nanopore",
+    note:"Lý thuyết cốt lõi của ONT",
+    cards:[
+      {q:"Nanopore đo cái gì, đơn vị gì?",
+       a:"<em>Dòng ion</em> qua lỗ protein trên màng, đo bằng <em>picoampere (pA)</em>. DNA đi qua làm <em>cản dòng</em> theo cách đặc trưng với từng tổ hợp base.",
+       en:"No optics, no synthesis, no amplification. It is an electrical measurement."},
+      {q:"Motor protein làm gì — vì sao không có nó thì không giải trình tự được?",
+       a:"Là <em>helicase</em>, tháo xoắn DNA sợi kép và <em>đẩy từng base một</em> qua pore. Không có nó, DNA trôi qua <em>quá nhanh</em> để đo.",
+       en:"The motor sets translocation speed — roughly 400 bases/second on Kit 14."},
+      {q:"Vì sao basecalling là bài toán học máy, không phải tra bảng?",
+       a:"Tại mỗi thời điểm có <em>nhiều base cùng nằm trong pore</em> (khoảng 5–10). Tín hiệu là <em>hàm của cả tổ hợp k-mer</em>, không phải của một base. Số tổ hợp quá lớn để tra bảng.",
+       en:"This is the single most important idea in M17A."},
+      {q:"R10.4.1 khác R9.4.1 ở điểm cấu trúc nào — và giải quyết vấn đề gì?",
+       a:"R10.4.1 có <em>hai điểm cảm nhận (dual reader head)</em> và <em>thân pore dài hơn</em>. Nhờ đó phân giải được <em>homopolymer</em> — điểm yếu kinh điển của R9.",
+       en:"R9.4.1 median read accuracy 96.8% → R10.4.1 98.8% (Hall et al. 2024)."},
+      {q:"Homopolymer là gì và vì sao từng là điểm yếu chí tử của ONT?",
+       a:"Chuỗi base giống nhau liên tiếp (AAAAAA). Với pore một điểm cảm nhận, tín hiệu <em>gần như không đổi</em> khi trượt qua → <em>không đếm được số base</em> → lỗi indel.",
+       en:"Indels in homopolymers used to break gene calling by shifting the reading frame."},
+      {q:"Simplex và duplex khác nhau thế nào?",
+       a:"<em>Simplex</em>: đọc một mạch. <em>Duplex</em>: đọc <em>cả hai mạch của cùng một phân tử</em> liên tiếp rồi lấy đồng thuận → độ chính xác cao hơn hẳn.",
+       en:"SUP + duplex reaches median read accuracy 99.93% (Q32)."},
+      {q:"Công thức Q score và ba mốc phải thuộc?",
+       a:"<em>Q = −10 × log₁₀(P_lỗi)</em>. <em>Q20</em> = 1% lỗi · <em>Q30</em> = 0,1% · <em>Q50</em> = 0,001%",
+       en:"Q is logarithmic: every +10 is a 10× reduction in error."},
+      {q:"Ba basecalling model của Dorado — đánh đổi là gì?",
+       a:"<em>fast</em> nhanh nhất, kém chính xác nhất · <em>hac</em> cân bằng · <em>sup</em> (super-accurate) chậm nhất, chính xác nhất, <em>đòi GPU mạnh</em>. Cùng một POD5 cho ba kết quả khác nhau.",
+       en:"For any accredited work: sup. Always record the exact model version."},
+      {q:"POD5 thay FAST5 vì lý do gì?",
+       a:"POD5 là định dạng <em>cột (columnar)</em>, đọc/ghi <em>nhanh hơn 5–10 lần</em>, dung lượng nhỏ hơn. FAST5 (dựa trên HDF5) là <em>di sản</em>.",
+       en:"If a protocol mentions FAST5, it predates Kit 14 — check everything else in it too."},
+      {q:"Vì sao phải lưu POD5 chứ không chỉ FASTQ?",
+       a:"POD5 là <em>tín hiệu thô</em> — có thể <em>basecall lại</em> bằng model tốt hơn trong tương lai. FASTQ là kết quả diễn giải, mất đi thì không lấy lại được.",
+       en:"But POD5 is ~1.5–3 TB per PromethION flow cell. Retention policy is an ISO 17025 decision, and a budget decision."},
+      {q:"Adaptive sampling hoạt động bằng cơ chế vật lý nào?",
+       a:"Basecall <em>vài trăm base đầu</em> theo thời gian thực, so với tham chiếu; nếu không cần thì <em>đảo điện áp</em> để đẩy phân tử ra, giải phóng pore cho phân tử khác.",
+       en:"Enrichment without any wet-lab step — the flow cell does the selection."},
+      {q:"Ba chiến lược adaptive sampling — và kết quả trong case study S. aureus/khoai tây?",
+       a:"<em>Loại nền mẫu</em> (khoai tây) → <em>13/13</em> gen enterotoxin · <em>Làm giàu đích</em> (S. aureus) → <em>13/13</em> · <em>Làm giàu theo CSDL mầm bệnh</em> → 11/13 · <em>Shotgun không đích</em> → chỉ <em>8/13</em>",
+       en:"Depletion of the food matrix worked as well as direct enrichment — and needs no prior species hypothesis."},
+      {q:"Vì sao ONT phát hiện được methyl hoá mà không cần bisulfite?",
+       a:"Base bị methyl hoá <em>làm biến dạng tín hiệu dòng ion</em> khác với base thường. Model đọc trực tiếp từ tín hiệu thô: <em>5mC, 5hmC, 6mA</em>.",
+       en:"Stored as MM/ML tags in the output BAM — this is why uBAM, not just FASTQ."},
+      {q:"MinION và PromethION khác nhau bao nhiêu về số kênh?",
+       a:"<em>MinION</em>: 512 kênh (2.048 pore, dùng 4 luân phiên/kênh). <em>PromethION</em>: <em>2.675 kênh</em> mỗi flow cell.",
+       en:"Realistic yields: MinION 6–25 Gb, PromethION 80–150 Gb per flow cell."},
+      {q:"Pore scan là gì và đọc nó để làm gì?",
+       a:"MinKNOW kiểm tra định kỳ để đếm <em>pore còn hoạt động</em>. Số pore <em>tụt nhanh</em> = mẫu bẩn hoặc thư viện có vấn đề — <em>không phải</em> flow cell kém.",
+       en:"A run starting at 1,400 pores and dropping to 300 by hour 4 is a chemistry problem."},
+      {q:"Tần số lấy mẫu Kit 14 / R10.4.1 và tốc độ dịch chuyển?",
+       a:"<em>5 kHz</em> lấy mẫu, DNA đi qua với tốc độ <em>~400 base/giây</em> → khoảng <em>12 điểm dữ liệu mỗi base</em>.",
+       en:"Older 4 kHz data needs different basecalling models — never mix."},
+      {q:"Độ sâu tối thiểu để lắp ráp bộ gen vi khuẩn chỉ bằng ONT?",
+       a:"<em>≥40×</em> cho assembly ngang hoặc hơn hybrid. <em>≥30×</em> đã đủ để phục hồi &gt;99% CDS.",
+       en:"Hall et al. 2024. Below 25–35× allelic mismatches start to appear."},
+      {q:"Sau Flye, cần bao nhiêu vòng Medaka?",
+       a:"<em>Đúng một vòng</em>. Thêm vòng nữa <em>không cải thiện</em> tỉ lệ lỗi.",
+       en:"And with R10.4.1 sup, short-read polishing gave no significant improvement at all."}
+    ],
+    quiz:[
+      {q:"Nanopore đo đại lượng vật lý nào?",
+       o:["Cường độ huỳnh quang","Dòng ion qua lỗ, đơn vị pA","pH thay đổi khi kéo dài mạch","Khối lượng phân tử"], a:1,
+       e:"Không quang học, không tổng hợp mạch, không khuếch đại. Đây là phép đo điện — nên cũng đo được cả base bị methyl hoá."},
+      {q:"Vì sao basecalling phải dùng mạng nơ-ron thay vì bảng tra?",
+       o:["Vì tín hiệu quá nhiễu","Vì có 5–10 base cùng nằm trong pore, tín hiệu là hàm của cả k-mer","Vì tốc độ dịch chuyển thay đổi","Vì cần phát hiện methyl hoá"], a:1,
+       e:"Đây là ý tưởng trung tâm của M17A. Tín hiệu tại một thời điểm phản ánh cả một tổ hợp base, không phải một base — số tổ hợp quá lớn để lập bảng."},
+      {q:"R10.4.1 giải quyết được điểm yếu nào của R9.4.1?",
+       o:["Tốc độ chạy","Homopolymer, nhờ dual reader head","Số lượng pore","Khả năng đọc RNA"], a:1,
+       e:"Hai điểm cảm nhận và thân pore dài hơn cho phép phân giải chuỗi base giống nhau liên tiếp. Độ chính xác read từ 96,8% lên 98,8%."},
+      {q:"Read có Q20 nghĩa là tỉ lệ lỗi bao nhiêu?",
+       o:["0,01%","0,1%","1%","2%"], a:2,
+       e:"Q = −10·log₁₀(P). Q20 → P = 0,01 = 1%. Q30 = 0,1%. Mỗi +10 điểm Q là giảm lỗi 10 lần."},
+      {q:"Bạn có POD5 và cần kết quả cho hồ sơ được công nhận. Chọn model nào?",
+       o:["fast, vì nhanh","hac, vì cân bằng","sup, và ghi lại chính xác phiên bản model","Model nào cũng như nhau"], a:2,
+       e:"sup cho độ chính xác cao nhất. Nhưng quan trọng không kém: phải ghi lại phiên bản model, vì cùng một POD5 với model khác sẽ cho kết quả khác."},
+      {q:"Vì sao nên cân nhắc lưu POD5 chứ không chỉ FASTQ?",
+       o:["POD5 nhỏ hơn","POD5 là tín hiệu thô, có thể basecall lại bằng model tốt hơn sau này","FASTQ không lưu chất lượng base","POD5 bắt buộc theo ISO 17025"], a:1,
+       e:"Tín hiệu thô là tài sản khoa học: model năm sau sẽ tốt hơn model hôm nay. Nhưng POD5 tốn 1,5–3 TB mỗi flow cell PromethION — chính sách lưu trữ là quyết định ngân sách."},
+      {q:"Adaptive sampling loại bỏ một phân tử không mong muốn bằng cách nào?",
+       o:["Enzyme cắt phân tử đó","Đảo điện áp để đẩy phân tử ra khỏi pore","Bỏ qua khi phân tích dữ liệu","Dùng probe bắt giữ"], a:1,
+       e:"Đây là điểm mấu chốt: việc chọn lọc xảy ra ngay trên flow cell, theo thời gian thực, không cần bước làm giàu nào trong phòng thí nghiệm."},
+      {q:"Trong nghiên cứu S. aureus trong khoai tây nghiền, chiến lược nào thu được 13/13 gen enterotoxin?",
+       o:["Chỉ shotgun không đích","Loại nền mẫu khoai tây, và làm giàu S. aureus","Chỉ làm giàu theo CSDL mầm bệnh","Không chiến lược nào đạt 13/13"], a:1,
+       e:"Cả hai đều đạt 13/13, so với 8/13 của shotgun. Đáng chú ý: loại nền mẫu hiệu quả ngang làm giàu đích — mà không cần biết trước loài nào."},
+      {q:"Số pore hoạt động tụt từ 1.400 xuống 300 sau 4 giờ. Nguyên nhân khả dĩ nhất?",
+       o:["Flow cell kém chất lượng","Chất nhiễm trong mẫu đầu độc pore","Basecalling model sai","Nhiệt độ phòng cao"], a:1,
+       e:"Đây là dấu hiệu kinh điển của vấn đề hoá học mẫu — polysaccharide, acid humic, muối dư. Kiểm tra A260/230 trước khi đổ lỗi cho flow cell."},
+      {q:"Độ sâu tối thiểu để assembly ONT-only ngang chất lượng hybrid?",
+       o:["10×","20×","≥40×","100×"], a:2,
+       e:"Hall et al. 2024: ≥40× cho assembly ngang hoặc tốt hơn hybrid Unicycler ở 3/4 loài. ≥30× đã phục hồi >99% CDS."},
+      {q:"Sau khi lắp ráp bằng Flye, chạy Medaka bao nhiêu vòng?",
+       o:["Không cần Medaka","Đúng 1 vòng","3 vòng","Lặp tới khi hội tụ"], a:1,
+       e:"Một vòng. Các vòng tiếp theo không cải thiện tỉ lệ lỗi. Và với R10.4.1 sup, đánh bóng bằng short-read cũng không cải thiện đáng kể."},
+      {q:"ONT phát hiện 5mC mà không cần bisulfite vì sao?",
+       o:["Có kit hoá học riêng","Base methyl hoá làm biến dạng tín hiệu dòng khác base thường","Suy ra từ GC content","Cần thêm bước PCR"], a:1,
+       e:"Phép đo là điện, nên mọi thứ làm đổi hình dạng phân tử đều đổi tín hiệu. Kết quả lưu ở tag MM/ML trong BAM — đó là lý do nên xuất uBAM chứ không chỉ FASTQ."}
+    ]
+  },
+
+  {
+    id:"cs", code:"CS", name:"Con số từ 5 case study",
+    note:"Số liệu để trích dẫn trong hồ sơ",
+    cards:[
+      {q:"HBV trên GridION: bao nhiêu mẫu trong bao lâu?",
+       a:"<em>96 mẫu trong 14 giờ</em>. 123/148 mẫu đạt ≥80% độ phủ đồng đều ở độ sâu <em>&gt;2.300×</em>.",
+       en:"Multiplexed tiled PCR of the ~3.2 kb HBV genome."},
+      {q:"Case astrovirus trong nhuyễn thể: quy mô và kết quả?",
+       a:"<em>134 mẫu</em> nhuyễn thể ven biển, nested RT-PCR → <em>37 contig</em> AstV. Phát hiện AstV chim/dơi/bò sát, <em>không có AstV người</em>.",
+       en:"Interpreted as an environmental / faecal contamination signal — a food-safety application."},
+      {q:"Chi phí giải trình tự một chủng vi khuẩn trên MinION/GridION?",
+       a:"<em>£40–45 mỗi chủng</em> ở độ sâu 40×, dựa trên ~£1.200/flow cell cho ~5,9–6,4 Gb (rapid kit).",
+       en:"Hall et al. 2024. This is the number for your business case."},
+      {q:"Độ chính xác read cao nhất đạt được, và ở cấu hình nào?",
+       a:"<em>99,93% (Q32)</em> — model <em>SUP</em> với <em>duplex</em> read, trên 14 loài Gram dương và Gram âm.",
+       en:"ONT benchmarking study, R10.4.1 on MinION/GridION."},
+      {q:"Hai variant caller cho F1 cao nhất với dữ liệu ONT?",
+       a:"<em>Clair3</em> và <em>DeepVariant</em> — cả SNP lẫn indel, ở cả model SUP và HAC. Trong <em>7 caller</em> được đánh giá.",
+       en:"Nanopore beat short-read Snippy especially in repetitive and variant-dense regions."},
+      {q:"M. tuberculosis: mức tương đồng giữa ONT và Illumina?",
+       a:"<em>&gt;99,99% concordance</em> cho SNV và indel, trên <em>151 cặp chủng</em> đối chứng.",
+       en:"This is the evidence that ONT-only is defensible for accredited variant reporting."},
+      {q:"PromethION trên nước thải: thu được bao nhiêu MAG?",
+       a:"<em>1.083 MAG chất lượng cao</em>, trong đó <em>57 bộ gen vòng khép kín</em>, từ 23 nhà máy xử lý nước thải (1 Tbp long-read + 0,9 Tbp short-read).",
+       en:"For comparison, a PacBio HiFi study yielded 31 HQ MAGs including 10 circular."},
+      {q:"Số liệu NÀO cho thấy ONT có thể THUA Illumina — và điều kiện nào?",
+       a:"Một nghiên cứu chuỗi thời gian: Illumina <em>57 MAG chất lượng cao</em> vs ONT chỉ <em>14</em>. Nguyên nhân: <em>độ sâu không đủ</em>.",
+       en:"Depth is the deciding variable. Quote this one too — it is what makes your reports credible."},
+      {q:"Nanopore-only long-read metagenomics: MAG chất lượng cao chiếm bao nhiêu?",
+       a:"<em>275 MAG</em> tổng, trong đó <em>94 MAG chất lượng cao có operon rRNA đầy đủ</em> (~34%).",
+       en:"Full-length rRNA operons in MAGs is something short reads essentially never deliver."},
+      {q:"Hybrid (long + short) so với Illumina-only về số MAG?",
+       a:"Hybrid thu được <em>gấp ~2 lần</em> số MAG chất lượng trung bình đến cao.",
+       en:"Useful when you must justify keeping an existing Illumina platform alongside ONT."},
+      {q:"Độ chính xác read R10.4.1 so với R9.4.1?",
+       a:"<em>R10.4.1: trung vị 98,8%</em> (IQR 98,1–99,2) vs <em>R9.4.1: 96,8%</em>, P&lt;0,001.",
+       en:"R9 chemistry is withdrawn. Any protocol citing R9 numbers is obsolete."},
+      {q:"Adaptive sampling vs shotgun cho gen enterotoxin S. aureus?",
+       a:"Adaptive sampling (loại nền mẫu hoặc làm giàu đích): <em>13/13</em>. Theo CSDL mầm bệnh: 11/13 (85%). <em>Shotgun không đích: 8/13 (62%)</em>.",
+       en:"And no culture enrichment step at all — this is the workflow-changing result."}
+    ],
+    quiz:[
+      {q:"Chi phí mỗi chủng vi khuẩn ở 40× trên MinION/GridION là bao nhiêu?",
+       o:["£10–15","£40–45","£120–150","£300+"], a:1,
+       e:"Hall et al. 2024, dựa trên ~£1.200/flow cell cho ~6 Gb. Đây là con số bạn đưa vào hồ sơ đầu tư — nhưng nhớ cộng nhân công và tách chiết."},
+      {q:"Độ chính xác read 99,93% (Q32) đạt được ở cấu hình nào?",
+       o:["fast + simplex","hac + simplex","sup + duplex","sup + simplex"], a:2,
+       e:"Duplex đọc cả hai mạch của cùng phân tử rồi lấy đồng thuận. Kết hợp với model sup cho con số cao nhất trong nghiên cứu 14 loài."},
+      {q:"Trong 7 variant caller được đánh giá cho dữ liệu ONT, hai cái tốt nhất là?",
+       o:["bcftools và freebayes","Clair3 và DeepVariant","Snippy và GATK","Medaka và Longshot"], a:1,
+       e:"Cả hai đều là phương pháp học sâu, cho F1 cao nhất ở cả SNP và indel. Nanopore còn vượt short-read Snippy ở vùng lặp và vùng nhiều biến thể."},
+      {q:"Số liệu nào cho thấy ONT CÓ THỂ thua Illumina trong metagenomics?",
+       o:["ONT luôn thắng","Một nghiên cứu chuỗi thời gian: Illumina 57 MAG HQ vs ONT 14, do thiếu độ sâu","ONT không phát hiện được vi khuẩn Gram dương","ONT không dựng được MAG"], a:1,
+       e:"Độ sâu là biến quyết định. Trích dẫn cả con số bất lợi này chính là điều làm báo cáo của bạn đáng tin — và cũng là lập luận cho việc cần thiết bị thông lượng cao."},
+      {q:"Trong case S. aureus/khoai tây, shotgun không đích thu được bao nhiêu gen enterotoxin?",
+       o:["13/13","11/13","8/13","5/13"], a:2,
+       e:"8/13 (62%) ở một lần lặp. Adaptive sampling đạt 13/13. Chênh lệch này là lý do adaptive sampling đáng để thẩm định cho ứng dụng thực phẩm."},
+      {q:"M. tuberculosis: mức tương đồng SNV/indel giữa ONT và Illumina?",
+       o:[">99,99%","~99,0%","~95%","~90%"], a:0,
+       e:"Trên 151 cặp chủng đối chứng. Đây là bằng chứng để bảo vệ việc báo cáo biến thể chỉ bằng ONT trước đánh giá viên."}
+    ]
+  }
+];
+
+/* ============================ TRẠNG THÁI ============================ */
+
+const KEY = "ont_study_v2";
+let S = load();
+function load(){
+  try{
+    const r = JSON.parse(localStorage.getItem(KEY));
+    if(r && typeof r === "object") return Object.assign({box:{}, best:{}, seen:{}}, r);
+  }catch(e){}
+  return {box:{}, best:{}, seen:{}};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const deckById = id => DECKS.find(d => d.id === id);
+const cardKey = (d,i) => d.id + ":" + i;
+function deckKnown(d){ return d.cards.reduce((n,_,i)=> n + ((S.box[cardKey(d,i)]||0) >= 2 ? 1 : 0), 0); }
+const totalCards = () => DECKS.reduce((n,d)=> n + d.cards.length, 0);
+const totalKnown = () => DECKS.reduce((n,d)=> n + deckKnown(d), 0);
+
+/* ============================ TRACE (đường tín hiệu) ============================ */
+
+const cv = document.getElementById("trace");
+let traceSeed = 7, traceFill = 0;
+function rnd(){ traceSeed = (traceSeed * 1103515245 + 12345) & 0x7fffffff; return traceSeed / 0x7fffffff; }
+
+function drawTrace(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = cv.clientWidth, h = 44;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const g = cv.getContext("2d");
+  g.setTransform(dpr,0,0,dpr,0,0);
+  g.clearRect(0,0,w,h);
+
+  const cs = getComputedStyle(document.documentElement);
+  const accent = cs.getPropertyValue("--accent").trim() || "#E89A2B";
+  const faint  = cs.getPropertyValue("--line").trim() || "#2A323E";
+
+  // sinh chuỗi mức dòng ion kiểu bậc thang (mỗi bậc = một k-mer)
+  traceSeed = 7;
+  const steps = [];
+  let x = 0;
+  while(x < w){
+    const wdt = 6 + rnd()*16;
+    steps.push({x, w:wdt, y: 10 + rnd()*24});
+    x += wdt;
+  }
+  const cut = w * traceFill;
+
+  const stroke = (from,to,color,alpha)=>{
+    g.beginPath(); g.lineWidth = 1.6; g.strokeStyle = color; g.globalAlpha = alpha;
+    g.lineJoin = "round";
+    let started = false;
+    for(const s of steps){
+      const a = Math.max(s.x, from), b = Math.min(s.x + s.w, to);
+      if(b <= a) continue;
+      if(!started){ g.moveTo(a, s.y); started = true; } else { g.lineTo(a, s.y); }
+      g.lineTo(b, s.y);
+    }
+    g.stroke(); g.globalAlpha = 1;
+  };
+  stroke(0, w, faint, 1);
+  if(cut > 0) stroke(0, cut, accent, 1);
+}
+
+/* ============================ ĐIỀU HƯỚNG ============================ */
+
+const app = document.getElementById("app");
+const crumb = document.getElementById("crumb");
+let view = "decks", ctx = {};
+
+function go(v, c){ view = v; ctx = c || {}; render(); window.scrollTo(0,0); }
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click", ()=> go(t.dataset.view));
+});
+function syncTabs(){
+  const map = {decks:"decks", cards:"decks", quizpick:"quizpick", quiz:"quizpick", quizdone:"quizpick", progress:"progress"};
+  document.querySelectorAll(".tab").forEach(t=>
+    t.setAttribute("aria-selected", String(map[view] === t.dataset.view)));
+}
+
+/* ============================ GIAO DIỆN ============================ */
+
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function ring(pct){
+  const r = 14, c = 2*Math.PI*r;
+  return `<svg class="ring" viewBox="0 0 34 34" aria-hidden="true">
+    <circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--line)" stroke-width="3"/>
+    <circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--accent)" stroke-width="3"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct)}"
+      transform="rotate(-90 17 17)"/></svg>`;
+}
+
+function render(){
+  syncTabs();
+  if(view === "decks")      viewDecks();
+  else if(view === "cards") viewCards();
+  else if(view === "quizpick") viewQuizPick();
+  else if(view === "quiz")  viewQuiz();
+  else if(view === "quizdone") viewQuizDone();
+  else                      viewProgress();
+  drawTrace();
+}
+
+function viewDecks(){
+  traceFill = totalCards() ? totalKnown()/totalCards() : 0;
+  crumb.innerHTML = `Track lý thuyết · <b>${totalKnown()}/${totalCards()}</b> thẻ đã thuộc`;
+  app.innerHTML = `
+    <h1>Thẻ ghi nhớ</h1>
+    <p class="lede">Sáu bộ thẻ cho phần lý thuyết học được không cần máy tính. Chạm để lật, rồi tự chấm. Tiến độ lưu trên máy bạn.</p>
+    <div class="decks">${DECKS.map(d=>{
+      const k = deckKnown(d), n = d.cards.length;
+      return `<button class="deck" data-deck="${d.id}" type="button">
+        <span class="code">${esc(d.code)}</span>
+        <span><span style="font-weight:600">${esc(d.name)}</span>
+          <span class="meta">${k}/${n} thẻ · ${d.quiz.length} câu hỏi · ${esc(d.note)}</span></span>
+        ${ring(n?k/n:0)}
+      </button>`;
+    }).join("")}</div>`;
+  app.querySelectorAll("[data-deck]").forEach(b=>
+    b.addEventListener("click", ()=> go("cards", {deck:b.dataset.deck, i:0, shown:false})));
+}
+
+function viewCards(){
+  const d = deckById(ctx.deck), i = ctx.i, c = d.cards[i];
+  traceFill = (i + (ctx.shown?1:0)) / d.cards.length;
+  crumb.innerHTML = `<b>${esc(d.code)}</b> ${esc(d.name)} · thẻ ${i+1}/${d.cards.length}`;
+  S.seen[cardKey(d,i)] = 1;
+
+  app.innerHTML = `
+    <div class="card">
+      <p class="qtext">${c.q}</p>
+      <div id="ans" class="${ctx.shown ? "" : "hidden"}">
+        <div class="divider"></div>
+        <p class="atext" style="margin:14px 0">${c.a}</p>
+        ${c.en ? `<p class="en">${esc(c.en)}</p>` : ""}
+      </div>
+    </div>
+    ${ctx.shown ? `
+      <div class="row">
+        <button class="act again" id="again" type="button">Cần ôn lại</button>
+        <button class="act good" id="good" type="button">Nhớ rồi</button>
+      </div>` : `
+      <button class="act primary" id="show" type="button">Xem đáp án</button>`}
+    <div class="row">
+      <button class="act" id="prev" type="button" ${i===0?"disabled":""}>← Trước</button>
+      <button class="act" id="back" type="button">Bộ thẻ khác</button>
+      <button class="act" id="next" type="button" ${i===d.cards.length-1?"disabled":""}>Sau →</button>
+    </div>`;
+
+  const show = ()=> go("cards", {deck:d.id, i, shown:true});
+  const grade = lvl => {
+    const k = cardKey(d,i);
+    S.box[k] = lvl === "good" ? Math.min((S.box[k]||0)+1, 3) : 0;
+    save();
+    if(i < d.cards.length-1) go("cards", {deck:d.id, i:i+1, shown:false});
+    else go("decks");
+  };
+  app.querySelector("#show")?.addEventListener("click", show);
+  app.querySelector("#good")?.addEventListener("click", ()=> grade("good"));
+  app.querySelector("#again")?.addEventListener("click", ()=> grade("again"));
+  app.querySelector("#prev").addEventListener("click", ()=> go("cards",{deck:d.id,i:i-1,shown:false}));
+  app.querySelector("#next").addEventListener("click", ()=> go("cards",{deck:d.id,i:i+1,shown:false}));
+  app.querySelector("#back").addEventListener("click", ()=> go("decks"));
+}
+
+function viewQuizPick(){
+  traceFill = 0;
+  crumb.textContent = "Trắc nghiệm củng cố";
+  app.innerHTML = `
+    <h1>Trắc nghiệm</h1>
+    <p class="lede">Mỗi câu có giải thích ngay sau khi trả lời — phần giải thích mới là chỗ học được nhiều nhất, đọc cả khi bạn làm đúng.</p>
+    <div class="decks">${DECKS.map(d=>{
+      const b = S.best[d.id];
+      return `<button class="deck" data-q="${d.id}" type="button">
+        <span class="code">${esc(d.code)}</span>
+        <span><span style="font-weight:600">${esc(d.name)}</span>
+          <span class="meta">${d.quiz.length} câu${b!=null?` · điểm cao nhất ${b}/${d.quiz.length}`:" · chưa làm"}</span></span>
+        ${ring(b!=null ? b/d.quiz.length : 0)}
+      </button>`;
+    }).join("")}</div>`;
+  app.querySelectorAll("[data-q]").forEach(b=>
+    b.addEventListener("click", ()=> go("quiz", {deck:b.dataset.q, i:0, score:0, pick:null})));
+}
+
+function viewQuiz(){
+  const d = deckById(ctx.deck), i = ctx.i, q = d.quiz[i];
+  traceFill = i / d.quiz.length;
+  crumb.innerHTML = `<b>${esc(d.code)}</b> trắc nghiệm · câu ${i+1}/${d.quiz.length} · điểm ${ctx.score}`;
+  const done = ctx.pick != null;
+
+  app.innerHTML = `
+    <div class="card">
+      <p class="qtext">${esc(q.q)}</p>
+      <div class="opts">${q.o.map((o,k)=>{
+        let cls = "opt";
+        if(done && k === q.a) cls += " right";
+        else if(done && k === ctx.pick) cls += " wrong";
+        return `<button class="${cls}" data-k="${k}" type="button" ${done?"disabled":""}>
+          <span class="k">${"ABCD"[k]}</span>${esc(o)}</button>`;
+      }).join("")}</div>
+    </div>
+    ${done ? `
+      <div class="exp">
+        <p class="verdict ${ctx.pick===q.a?"r":"w"}">${ctx.pick===q.a?"Chính xác":"Chưa đúng"}</p>
+        <p style="margin-top:6px">${esc(q.e)}</p>
+      </div>
+      <button class="act primary" id="nx" type="button">${i<d.quiz.length-1?"Câu tiếp theo":"Xem kết quả"}</button>` : ""}
+    <button class="act" id="quit" type="button">Thoát</button>`;
+
+  app.querySelectorAll(".opt").forEach(b=> b.addEventListener("click", ()=>{
+    const k = +b.dataset.k;
+    go("quiz", {deck:d.id, i, score: ctx.score + (k===q.a?1:0), pick:k});
+  }));
+  app.querySelector("#nx")?.addEventListener("click", ()=>{
+    if(i < d.quiz.length-1) go("quiz", {deck:d.id, i:i+1, score:ctx.score, pick:null});
+    else{
+      if(S.best[d.id] == null || ctx.score > S.best[d.id]){ S.best[d.id] = ctx.score; save(); }
+      go("quizdone", {deck:d.id, score:ctx.score});
+    }
+  });
+  app.querySelector("#quit").addEventListener("click", ()=> go("quizpick"));
+}
+
+function viewQuizDone(){
+  const d = deckById(ctx.deck), n = d.quiz.length, s = ctx.score, pct = s/n;
+  traceFill = pct;
+  crumb.innerHTML = `<b>${esc(d.code)}</b> · kết quả`;
+  const msg = pct === 1 ? "Toàn bộ chính xác. Bộ này bạn nắm chắc rồi."
+    : pct >= 0.7 ? "Vững. Xem lại các câu sai rồi chuyển bộ khác."
+    : "Chưa đạt. Quay lại bộ thẻ ghi nhớ trước khi làm lại — làm lại ngay mà chưa ôn thì chỉ đang đoán.";
+  app.innerHTML = `
+    <div class="card" style="align-items:center; text-align:center; padding:32px 20px">
+      <p class="eyebrow">${esc(d.code)} · ${esc(d.name)}</p>
+      <p style="font-family:var(--mono); font-size:46px; font-weight:600; letter-spacing:-.03em; margin:6px 0">${s}<span style="color:var(--faint); font-size:26px">/${n}</span></p>
+      <p class="lede" style="text-align:center">${esc(msg)}</p>
+    </div>
+    <div class="row">
+      <button class="act" id="again" type="button">Làm lại</button>
+      <button class="act primary" id="deck" type="button">Ôn bộ thẻ ${esc(d.code)}</button>
+    </div>
+    <button class="act" id="pick" type="button">Chọn bộ khác</button>`;
+  app.querySelector("#again").addEventListener("click", ()=> go("quiz",{deck:d.id,i:0,score:0,pick:null}));
+  app.querySelector("#deck").addEventListener("click", ()=> go("cards",{deck:d.id,i:0,shown:false}));
+  app.querySelector("#pick").addEventListener("click", ()=> go("quizpick"));
+}
+
+function viewProgress(){
+  const tk = totalKnown(), tc = totalCards();
+  traceFill = tc ? tk/tc : 0;
+  crumb.textContent = "Tiến độ học";
+  const quizDone = DECKS.filter(d => S.best[d.id] != null).length;
+  const quizPts = DECKS.reduce((n,d)=> n + (S.best[d.id]||0), 0);
+  const quizTot = DECKS.reduce((n,d)=> n + d.quiz.length, 0);
+
+  app.innerHTML = `
+    <h1>Tiến độ</h1>
+    <div class="stats">
+      <div class="stat"><div class="n">${tk}</div><div class="l">Thẻ đã thuộc</div></div>
+      <div class="stat"><div class="n">${Math.round(tc?tk/tc*100:0)}<span style="font-size:16px">%</span></div><div class="l">Hoàn thành</div></div>
+      <div class="stat"><div class="n">${quizPts}<span style="color:var(--faint); font-size:16px">/${quizTot}</span></div><div class="l">Điểm quiz</div></div>
+    </div>
+    <div class="plist">${DECKS.map(d=>{
+      const k = deckKnown(d), n = d.cards.length, p = n?k/n:0;
+      return `<div class="prow">
+        <span class="c">${esc(d.code)}</span>
+        <span><span class="nm">${esc(d.name)}</span><span class="bar"><i style="width:${p*100}%"></i></span></span>
+        <span class="pct">${k}/${n}</span>
+      </div>`;
+    }).join("")}</div>
+    <p class="lede" style="font-size:13.5px">Đã làm ${quizDone}/${DECKS.length} bộ trắc nghiệm. Tiến độ lưu trong trình duyệt này — mở cùng một trình duyệt trên điện thoại thì tiếp tục được.</p>
+    <button class="act" id="reset" type="button">Xoá toàn bộ tiến độ</button>`;
+  app.querySelector("#reset").addEventListener("click", ()=>{
+    if(confirm("Xoá toàn bộ tiến độ học? Không khôi phục được.")){
+      S = {box:{}, best:{}, seen:{}}; save(); render();
+    }
+  });
+}
+
+/* ============================ THEME + PHÍM ============================ */
+
+const tbtn = document.getElementById("themeBtn");
+const savedTheme = (()=>{ try{ return localStorage.getItem("ont_theme"); }catch(e){ return null; } })();
+if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+tbtn.addEventListener("click", ()=>{
+  const cur = document.documentElement.getAttribute("data-theme")
+    || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const nxt = cur === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", nxt);
+  try{ localStorage.setItem("ont_theme", nxt); }catch(e){}
+  drawTrace();
+});
+
+document.addEventListener("keydown", e=>{
+  if(view === "cards"){
+    if(e.key === " " || e.key === "Enter"){ e.preventDefault(); app.querySelector("#show")?.click(); }
+    if(e.key === "1") app.querySelector("#again")?.click();
+    if(e.key === "2") app.querySelector("#good")?.click();
+    if(e.key === "ArrowLeft") app.querySelector("#prev")?.click();
+    if(e.key === "ArrowRight") app.querySelector("#next")?.click();
+  }
+  if(view === "quiz"){
+    const k = "1234".indexOf(e.key);
+    if(k >= 0) app.querySelectorAll(".opt")[k]?.click();
+    if(e.key === "Enter") app.querySelector("#nx")?.click();
+  }
+});
+
+// vuốt ngang trên điện thoại
+let tx = 0, ty = 0;
+app.addEventListener("touchstart", e=>{ tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, {passive:true});
+app.addEventListener("touchend", e=>{
+  if(view !== "cards") return;
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*2){
+    (dx < 0 ? app.querySelector("#next") : app.querySelector("#prev"))?.click();
+  }
+}, {passive:true});
+
+window.addEventListener("resize", drawTrace);
+render();
+</script>

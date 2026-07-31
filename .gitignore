@@ -1,0 +1,34 @@
+# === BẢN QUYỀN — tuyệt đối không push ===
+*.pdf
+*.epub
+*.djvu
+
+# === Bảo mật khách hàng / nội bộ ===
+private/
+*.secret
+.env
+
+# === Dữ liệu & file nén: quá lớn cho git ===
+data/
+*.zip
+*.tar
+*.tar.gz
+*.gz
+*.fastq
+*.fq
+*.pod5
+*.fast5
+*.bam
+*.bai
+*.cram
+*.sam
+
+# === File sinh tự động (bản sao không kiểm soát) ===
+PROJECT_KNOWLEDGE_ALL.md
+
+# === Môi trường & tạm ===
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+work/
+.nextflow*
