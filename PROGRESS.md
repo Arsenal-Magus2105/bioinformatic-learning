@@ -10,16 +10,16 @@
 
 | Trường | Giá trị |
 |---|---|
-| Cập nhật lần cuối | **2026-07-31** |
+| Cập nhật lần cuối | **2026-08-01** |
 | Phiên bản lộ trình | **v2** (827 h ≈ 21 tháng — đã thêm nhánh M25 GMO) |
 | Giai đoạn | **GĐ I — Nền tảng** |
 | Module đang học | **M2 — Linux** (25 h) |
-| Vị trí trong module | BT1 ✅ PASS · đang tới BT2 |
-| Giờ tích luỹ | ~6 / 827 h |
+| Vị trí trong module | BT1 ✅ PASS · BT2 ✅ PASS · đang tới BT3 |
+| Giờ tích luỹ | ~7 / 827 h |
 | Tuần thứ | 1 |
 | Mốc gần nhất | **Mốc A** — cuối GĐ III (~tháng 8,5) |
 
-**Việc kế tiếp / Next action:** BT2 của M2.
+**Việc kế tiếp / Next action:** BT3 của M2 — tải genome *E. coli* từ NCBI, tính `sha256sum`, khoá `444`, thử ghi đè để chứng minh bị chặn.
 
 ---
 
@@ -32,7 +32,7 @@
 | # | Module | h | TT | Ghi chú |
 |---|---|---|---|---|
 | 1 | M0 Learning roadmap | 4 | ✅ | |
-| 2 | **M2 Linux** | 25 | 🟡 | BT1 ✅ · BT2–BT8 ⬜ · MP1 ⬜ · MP2 ⬜ |
+| 2 | **M2 Linux** | 25 | 🟡 | BT1 ✅ · BT2 ✅ · BT3–BT8 ⬜ · MP1 ⬜ · MP2 ⬜ |
 | 3 | T1 Sinh học phân tử & tiến hoá | 6 | ⬜ | Ohlebusch ch.1 + Selzer ch.2 |
 | 4 | M1 Modern molecular biology for NGS | 10 | ⬜ | |
 | 5 | M3 Command line & data wrangling | 28 | ⬜ | |
