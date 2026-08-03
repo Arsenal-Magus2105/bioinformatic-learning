@@ -10,16 +10,16 @@
 
 | Trường | Giá trị |
 |---|---|
-| Cập nhật lần cuối | **2026-08-01** |
+| Cập nhật lần cuối | **2026-08-03** |
 | Phiên bản lộ trình | **v2** (827 h ≈ 21 tháng — đã thêm nhánh M25 GMO) |
 | Giai đoạn | **GĐ I — Nền tảng** |
 | Module đang học | **M2 — Linux** (25 h) |
-| Vị trí trong module | BT1 ✅ PASS · BT2 ✅ PASS · đang tới BT3 |
-| Giờ tích luỹ | ~7 / 827 h |
+| Vị trí trong module | BT1 ✅ PASS · BT2 ✅ PASS · BT3 ✅ PASS · đang tới BT4 |
+| Giờ tích luỹ | ~8,5 / 827 h |
 | Tuần thứ | 1 |
 | Mốc gần nhất | **Mốc A** — cuối GĐ III (~tháng 8,5) |
 
-**Việc kế tiếp / Next action:** BT3 của M2 — tải genome *E. coli* từ NCBI, tính `sha256sum`, khoá `444`, thử ghi đè để chứng minh bị chặn.
+**Việc kế tiếp / Next action:** BT4 của M2 — khảo sát file genome đã nén mà không giải nén (`zcat`, `head`, `wc -l`, `grep -c`).
 
 ---
 
@@ -32,7 +32,7 @@
 | # | Module | h | TT | Ghi chú |
 |---|---|---|---|---|
 | 1 | M0 Learning roadmap | 4 | ✅ | |
-| 2 | **M2 Linux** | 25 | 🟡 | BT1 ✅ · BT2 ✅ · BT3–BT8 ⬜ · MP1 ⬜ · MP2 ⬜ |
+| 2 | **M2 Linux** | 25 | 🟡 | BT1 ✅ · BT2 ✅ · BT3 ✅ · BT4–BT8 ⬜ · MP1 ⬜ · MP2 ⬜ |
 | 3 | T1 Sinh học phân tử & tiến hoá | 6 | ⬜ | Ohlebusch ch.1 + Selzer ch.2 |
 | 4 | M1 Modern molecular biology for NGS | 10 | ⬜ | |
 | 5 | M3 Command line & data wrangling | 28 | ⬜ | |
@@ -165,4 +165,8 @@
 ## CÂU HỎI ĐANG CHỜ MENTOR / Open questions for mentor
 *(Claude Code ghi vào đây, người học hỏi trên điện thoại, mentor trả lời rồi xoá)*
 
-- *(trống)*
+- **2026-08-02 (M2, review BT1):** Muốn hiểu sâu hơn "environment" (conda/micromamba) là gì
+  về mặt cơ chế — không chỉ analogy "bộ kit riêng cho từng method". Cụ thể: environment cô lập
+  bằng cách nào ở mức OS (biến `PATH`, symlink, hay thứ gì khác)? So sánh với venv Python và
+  với container (Docker) — ranh giới cô lập khác nhau ở đâu? Claude Code đã trả lời ngắn gọn
+  bằng analogy lab, nhưng phần cơ chế kỹ hơn nên hỏi mentor.
