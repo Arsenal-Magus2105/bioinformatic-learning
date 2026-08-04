@@ -86,6 +86,36 @@ echo test > GCF_000005845.2_ASM584v2_genomic.fna.gz   # phép thử ghi đè
 
 ---
 
+## 2026-08-04 · M2 · ~45 phút
+**Đã làm:** BT4 — khảo sát file genome nén mà không giải nén ra đĩa, dùng pipe nối
+`zcat` với `head`/`wc -l`/`grep -c`.
+**Lệnh đã chạy:**
+```bash
+ls -lh GCF_000005845.2_ASM584v2_genomic.fna.gz
+zcat GCF_000005845.2_ASM584v2_genomic.fna.gz | head -n 1
+zcat GCF_000005845.2_ASM584v2_genomic.fna.gz | wc -l
+zcat GCF_000005845.2_ASM584v2_genomic.fna.gz | grep -c "^>"
+```
+**Kết quả / quan sát:**
+- Dung lượng nén: `1.4M`
+- Dòng đầu tiên: `>NC_000913.3 Escherichia coli str. K-12 substr. MG1655, complete genome`
+- Tổng số dòng: `58022` — đối chiếu bằng tính tay (4.641.652 bp / 80 ký tự mỗi dòng ≈
+  58.021 dòng chuỗi + 1 dòng header) khớp gần đúng, xác nhận không có gì bất thường.
+- Số dòng bắt đầu bằng `>`: `1`
+**Diễn giải:** ban đầu kết luận "1 sequence = genome hoàn thiện, nhiều sequence = chưa
+assemble" — bị sửa vì sai: số dòng `>` chỉ phản ánh **số replicon**, không tự động phản
+ánh mức hoàn chỉnh (một genome đóng hoàn chỉnh vẫn có thể có nhiều dòng `>` nếu mang
+plasmid). Kết luận đúng phải dựa vào **nội dung header** — ở đây ghi rõ "complete genome"
+→ xác nhận *E. coli* K-12 MG1655 có bộ gen đóng hoàn chỉnh, không mang plasmid, không có
+contig rời.
+**Vướng mắc:** chưa từng dùng pipe (`|`) trước đây; chưa phân biệt được `^>` (đầu dòng)
+với `>` (bất kỳ đâu trong dòng) trong regex của `grep`.
+**Quyết định:** dùng tab completion cho tên file dài thay vì copy-paste từ `ls`, tránh lỗi
+ký tự ẩn.
+**Câu hỏi cho mentor:** *(trống)*
+
+---
+
 ## Bảng trạng thái module
 
 | Module | Bắt đầu | Hoàn thành | Tự chấm /25 | Ghi chú |
